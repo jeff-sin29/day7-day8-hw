@@ -12,8 +12,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -91,6 +90,34 @@ class CompanyControllerTest {
                         .content(requestBody))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(3));
+    }
+
+    @Test
+    void should_Update_Company_Name_given_Valid_Id() throws Exception {
+        String updateRequest = """
+        {
+            "name": "Companyyy"
+        }
+        """;
+        mockMvc.perform(put("/companies/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updateRequest))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.name").value("Companyyy"));
+    }
+
+    @Test
+    void should_Return_404_when_Update_Company_given_Nonexistent_Id() throws Exception {
+        String updateRequest = """
+        {
+            "name": "failll"
+        }
+        """;
+        mockMvc.perform(put("/companies/543")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updateRequest))
+                .andExpect(status().isNotFound());
     }
 
 }

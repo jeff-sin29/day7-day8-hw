@@ -61,4 +61,15 @@ public class CompanyController {
         response.put("id", newId);
         return ResponseEntity.status(201).body(response);
     }
+
+    @PutMapping("/companies/{id}")
+    public ResponseEntity<Company> updateCompany(@PathVariable int id, @RequestBody Company updatedCompany) {
+        for (Company company : companies) {
+            if (company.getId() == id) {
+                company.setName(updatedCompany.getName());
+                return ResponseEntity.ok(company);
+            }
+        }
+        return ResponseEntity.notFound().build();
+    }
 }
