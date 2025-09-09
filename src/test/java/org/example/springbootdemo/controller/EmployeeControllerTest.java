@@ -195,4 +195,24 @@ class EmployeeControllerTest {
                 .andExpect(jsonPath("$[0].name").value("Mary"))
                 .andExpect(jsonPath("$[1].name").value("Peter"));
     }
+
+    @Test
+    void should_Delete_Employee_and_Return_204_when_Employee_Exists() throws Exception {
+        String requestBody = """
+        {
+            "name": "Ketty",
+            "age": 30,
+            "salary": 5000,
+            "gender": "Female"
+        }
+        """;
+        mockMvc.perform(post("/employees")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(1));
+
+        mockMvc.perform(delete("/employees/1"))
+                .andExpect(status().isNoContent());
+    }
 }
