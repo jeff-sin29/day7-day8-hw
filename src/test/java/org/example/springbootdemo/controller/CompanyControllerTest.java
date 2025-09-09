@@ -61,4 +61,22 @@ class CompanyControllerTest {
                 .andExpect(status().isNotFound());
     }
 
+    @Test
+    void should_Return_Paged_Companies_when_Query_With_Page_And_Size() throws Exception {
+        List<Company> companies = new ArrayList<>();
+        companies.add(new Company(1, "Company1"));
+        companies.add(new Company(2, "Company2"));
+        companies.add(new Company(3, "Company3"));
+        companyController.setCompanies(companies);
+
+        mockMvc.perform(get("/companies")
+                        .param("page", "1")
+                        .param("size", "2")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].name").value("Company1"))
+                .andExpect(jsonPath("$[1].name").value("Company2"));
+    }
+
 }

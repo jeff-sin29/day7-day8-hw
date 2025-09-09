@@ -5,6 +5,7 @@ import org.example.springbootdemo.Employee;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
@@ -28,11 +29,6 @@ public class CompanyController {
         return idCounter;
     }
 
-    @GetMapping("/companies")
-    public List<Company> getCompanies() {
-        return companies;
-    }
-
     @GetMapping("/companies/{id}")
     public ResponseEntity<Company> getCompanyById(@PathVariable int id) {
         return companies.stream()
@@ -40,5 +36,20 @@ public class CompanyController {
                 .findFirst()
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/companies")
+    public List<Company> getCompanies(
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size) {
+        if (page != null && size != null) {
+            int fromIndex = Math.max((page - 1) * size, 0);
+            int toIndex = Math.min(fromIndex + size, companies.size());
+            if (fromIndex > toIndex) {
+                return new ArrayList<>();
+            }
+            return companies.subList(fromIndex, toIndex);
+        }
+        return companies;
     }
 }
