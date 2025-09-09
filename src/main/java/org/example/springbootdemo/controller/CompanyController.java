@@ -2,7 +2,9 @@ package org.example.springbootdemo.controller;
 
 import org.example.springbootdemo.Company;
 import org.example.springbootdemo.Employee;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
@@ -29,5 +31,14 @@ public class CompanyController {
     @GetMapping("/companies")
     public List<Company> getCompanies() {
         return companies;
+    }
+
+    @GetMapping("/companies/{id}")
+    public ResponseEntity<Company> getCompanyById(@PathVariable int id) {
+        return companies.stream()
+                .filter(company -> company.getId() == id)
+                .findFirst()
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 }

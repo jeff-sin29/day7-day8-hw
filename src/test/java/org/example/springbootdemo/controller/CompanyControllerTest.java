@@ -44,4 +44,21 @@ class CompanyControllerTest {
                 .andExpect(jsonPath("$[0].name").value("Company1"))
                 .andExpect(jsonPath("$[1].name").value("Company2"));
     }
+
+    @Test
+    void should_Return_Company_when_GetCompanyById_given_CompanyId() throws Exception {
+        mockMvc.perform(get("/companies/{id}", 1)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.name").value("Company1"));
+    }
+
+    @Test
+    void should_Return_404_when_GetCompanyById_given_NonexistentId() throws Exception {
+        mockMvc.perform(get("/companies/{id}", 924)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
 }
