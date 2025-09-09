@@ -3,13 +3,12 @@ package org.example.springbootdemo.controller;
 import org.example.springbootdemo.Company;
 import org.example.springbootdemo.Employee;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class CompanyController {
@@ -51,5 +50,15 @@ public class CompanyController {
             return companies.subList(fromIndex, toIndex);
         }
         return companies;
+    }
+
+    @PostMapping("/companies")
+    public ResponseEntity<Map<String, Integer>> createCompany(@RequestBody Company company) {
+        int newId = ++idCounter;
+        company.setId(newId);
+        companies.add(company);
+        Map<String, Integer> response = new HashMap<>();
+        response.put("id", newId);
+        return ResponseEntity.status(201).body(response);
     }
 }

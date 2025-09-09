@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -27,12 +28,11 @@ class CompanyControllerTest {
 
     @BeforeEach
     void setUp() {
-        companyController.setCompanies(new ArrayList<>());
-        companyController.setIdCounter(0);
         List<Company> companies = new ArrayList<>();
         companies.add(new Company(1, "Company1"));
         companies.add(new Company(2, "Company2"));
         companyController.setCompanies(companies);
+        companyController.setIdCounter(2);
     }
 
     @Test
@@ -77,6 +77,20 @@ class CompanyControllerTest {
                 .andExpect(jsonPath("$.length()").value(2))
                 .andExpect(jsonPath("$[0].name").value("Company1"))
                 .andExpect(jsonPath("$[1].name").value("Company2"));
+    }
+
+    @Test
+    void should_Create_Company_and_Return_Id_given_Valid_Company() throws Exception {
+        String requestBody = """
+    {
+        "name": "Company3"
+    }
+    """;
+        mockMvc.perform(post("/companies")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(3));
     }
 
 }
