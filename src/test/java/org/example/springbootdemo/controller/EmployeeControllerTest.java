@@ -1,0 +1,129 @@
+package org.example.springbootdemo.controller;
+
+import jakarta.annotation.Resource;
+import org.example.springbootdemo.Employee;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.ContentResultMatchers;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@SpringBootTest
+@AutoConfigureMockMvc
+class EmployeeControllerTest {
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private EmployeeController employeeController;
+
+    @BeforeEach
+    void setUp(){
+        employeeController.employees.clear();
+    }
+
+    @Test
+    void should_Create_Employee_given_employee_correct_attribute() throws Exception{
+        String requestBody = """
+                {
+                    "name": "John Doe",
+                    "age": 30,
+                    "salary": 5000,
+                    "gender": "Male"
+                }
+                """;
+        mockMvc.perform(post("/employees")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(1));
+    }
+
+    @Test
+    void should_Return_Employee_when_Get_Employee_given_employee_id() throws Exception {
+        String requestBody = """
+                {
+                    "name": "John Doe",
+                    "age": 30,
+                    "salary": 7000,
+                    "gender": "Male"
+                }
+                """;
+
+        mockMvc.perform(post("/employees")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(1));
+
+        mockMvc.perform(get("/employees/{id}", 1))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.name").value("John Doe"))
+                .andExpect(jsonPath("$.age").value(30))
+                .andExpect(jsonPath("$.salary").value(7000))
+                .andExpect(jsonPath("$.gender").value("Male"));
+    }
+
+    @Test
+    void should_Return_Employees_when_Query_Employee_Given_gender() throws Exception {
+        String requestBody = """
+                {
+                    "name": "John Doe",
+                    "age": 30,
+                    "salary": 7000,
+                    "gender": "Male"
+                }
+                """;
+
+        mockMvc.perform(post("/employees")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(1));
+
+        requestBody = """
+                {
+                    "name": "Mary",
+                    "age": 30,
+                    "salary": 7000,
+                    "gender": "Female"
+                }
+                """;
+
+        mockMvc.perform(post("/employees")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(2));
+
+        requestBody = """
+                {
+                    "name": "Candy",
+                    "age": 30,
+                    "salary": 8000,
+                    "gender": "Female"
+                }
+                """;
+
+        mockMvc.perform(post("/employees")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(3));
+
+        mockMvc.perform(get("/employees")
+                        .param("gender", "Female")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2));
+    }
+}
