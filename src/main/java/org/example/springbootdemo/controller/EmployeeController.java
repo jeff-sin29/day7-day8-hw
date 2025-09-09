@@ -16,6 +16,10 @@ public class EmployeeController {
 
     private int idCounter = 0;
 
+    public void setIdCounter(int idCounter) {
+        this.idCounter = idCounter;
+    }
+
     @PostMapping("/employees")
     public ResponseEntity<Map<String, Object>> createEmployee(@RequestBody Employee employee){
         idCounter ++;
@@ -39,8 +43,17 @@ public class EmployeeController {
                 .toList();
     }
 
-
-
+    @PutMapping("/employees/{id}")
+    public ResponseEntity<Employee> updateEmployee(@PathVariable long id, @RequestBody Employee updatedEmployee) {
+        for (Employee employee : employees) {
+            if (employee.getId() == id) {
+                employee.setAge(updatedEmployee.getAge());
+                employee.setSalary(updatedEmployee.getSalary());
+                return ResponseEntity.ok(employee);
+            }
+        }
+        return ResponseEntity.notFound().build();
+    }
 
 
 
