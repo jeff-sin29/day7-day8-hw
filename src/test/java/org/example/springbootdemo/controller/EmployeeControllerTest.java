@@ -215,4 +215,53 @@ class EmployeeControllerTest {
         mockMvc.perform(delete("/employees/1"))
                 .andExpect(status().isNoContent());
     }
+
+    @Test
+    void should_Return_Paged_Employees_when_Query_With_Page_And_Size() throws Exception {
+        String employee1 = """
+    {
+        "name": "Katy",
+        "age": 25,
+        "salary": 5000,
+        "gender": "Female"
+    }
+    """;
+        String employee2 = """
+    {
+        "name": "Kenny",
+        "age": 28,
+        "salary": 6000,
+        "gender": "Male"
+    }
+    """;
+        String employee3 = """
+    {
+        "name": "Jeff",
+        "age": 30,
+        "salary": 7000,
+        "gender": "Male"
+    }
+    """;
+        mockMvc.perform(post("/employees")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(employee1))
+                .andExpect(status().isCreated());
+        mockMvc.perform(post("/employees")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(employee2))
+                .andExpect(status().isCreated());
+        mockMvc.perform(post("/employees")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(employee3))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(get("/employees")
+                        .param("page", "1")
+                        .param("size", "2")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].name").value("Katy"))
+                .andExpect(jsonPath("$[1].name").value("Kenny"));
+    }
 }

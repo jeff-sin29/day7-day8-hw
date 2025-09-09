@@ -37,14 +37,28 @@ public class EmployeeController {
     }
 
     @GetMapping("/employees")
-    public ResponseEntity<List<Employee>> getEmployees(@RequestParam(required = false) String gender) {
+    public ResponseEntity<List<Employee>> getEmployees(
+            @RequestParam(required = false) String gender,
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size) {
+
         if (gender != null) {
             List<Employee> filteredEmployees = employees.stream()
                     .filter(employee -> employee.getGender() != null && employee.getGender().equalsIgnoreCase(gender))
                     .toList();
             return ResponseEntity.ok(filteredEmployees);
         }
-        return ResponseEntity.ok(employees);
+        else if (page != null && size != null) {
+            int fromIndex = Math.max((page - 1) * size, 0);
+            int toIndex = Math.min(fromIndex + size, employees.size());
+            List<Employee> pagedEmployees = employees.subList(fromIndex, toIndex);
+            return ResponseEntity.ok(pagedEmployees);
+        }
+        else{
+            return ResponseEntity.ok(employees);
+        }
+
+
     }
 
     @PutMapping("/employees/{id}")
