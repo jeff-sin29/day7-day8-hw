@@ -72,4 +72,17 @@ public class CompanyController {
         }
         return ResponseEntity.notFound().build();
     }
+
+    @DeleteMapping("/companies/{id}")
+    public ResponseEntity<Void> deleteCompany(@PathVariable int id) {
+        for (int i = 0; i < companies.size(); i++) {
+            if (companies.get(i).getId() == id) {
+                companies.remove(i);
+                return ResponseEntity.noContent().build();
+            }
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+
 }

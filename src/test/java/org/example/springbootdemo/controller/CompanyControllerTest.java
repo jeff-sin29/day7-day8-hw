@@ -120,4 +120,16 @@ class CompanyControllerTest {
                 .andExpect(status().isNotFound());
     }
 
+    @Test
+    void should_Delete_Company_and_Return_204_when_Company_Exists() throws Exception {
+        mockMvc.perform(delete("/companies/1"))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void should_Return_404_when_Delete_Company_given_Nonexistent_Id() throws Exception {
+        mockMvc.perform(delete("/companies/45"))
+                .andExpect(status().isNotFound());
+    }
+
 }
