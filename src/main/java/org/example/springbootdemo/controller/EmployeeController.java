@@ -37,10 +37,14 @@ public class EmployeeController {
     }
 
     @GetMapping("/employees")
-    public List<Employee> queryEmployeeByGender(@RequestParam String gender) {
-        return employees.stream()
-                .filter(employee -> employee.getGender() != null && employee.getGender().equalsIgnoreCase(gender))
-                .toList();
+    public ResponseEntity<List<Employee>> getEmployees(@RequestParam(required = false) String gender) {
+        if (gender != null) {
+            List<Employee> filteredEmployees = employees.stream()
+                    .filter(employee -> employee.getGender() != null && employee.getGender().equalsIgnoreCase(gender))
+                    .toList();
+            return ResponseEntity.ok(filteredEmployees);
+        }
+        return ResponseEntity.ok(employees);
     }
 
     @PutMapping("/employees/{id}")
@@ -54,8 +58,5 @@ public class EmployeeController {
         }
         return ResponseEntity.notFound().build();
     }
-
-
-
 
 }
