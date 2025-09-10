@@ -1,39 +1,33 @@
 package org.example.springbootdemo.controller;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import org.example.springbootdemo.Employee;
+import lombok.Getter;
+import lombok.Setter;
+import org.example.springbootdemo.entity.Employee;
+import org.example.springbootdemo.service.EmployeeService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Getter
+@Setter
 @RestController
 public class EmployeeController {
-    public List<Employee> employees = new ArrayList<>();
-
-    private int idCounter = 0;
-
-    public void setIdCounter(int idCounter) {
-        this.idCounter = idCounter;
-    }
+    @Autowired
+    EmployeeService employeeService;
 
     @PostMapping("/employees")
     public ResponseEntity<Map<String, Object>> createEmployee(@RequestBody Employee employee){
-        idCounter ++;
-        employee.setId(idCounter);
-        employees.add(employee);
-        return ResponseEntity.status(201).body(Map.of("id", employee.getId()));
+        Map<String, Object> response = employeeService.createEmployee(employee);
+        return ResponseEntity.status(201).body(response);
     }
 
     @GetMapping("/employees/{id}")
-    public Employee getEmployee(@PathVariable long id){
-        return employees.stream()
-                .filter(employee -> employee.getId() == id)
-                .findFirst()
-                .orElse(null);
+    public ResponseEntity<Employee> getEmployee(@PathVariable long id){
+        return ResponseEntity.status(200).body(employeeService.getEmployeeById(id));
     }
 
     @GetMapping("/employees")
@@ -43,40 +37,35 @@ public class EmployeeController {
             @RequestParam(required = false) Integer size) {
 
         if (gender != null) {
-            List<Employee> filteredEmployees = employees.stream()
-                    .filter(employee -> employee.getGender() != null && employee.getGender().equalsIgnoreCase(gender))
-                    .toList();
+            List<Employee> filteredEmployees = employeeService.getEmployeesByGender(gender);
             return ResponseEntity.ok(filteredEmployees);
         }
         else if (page != null && size != null) {
-            int fromIndex = Math.max((page - 1) * size, 0);
-            int toIndex = Math.min(fromIndex + size, employees.size());
-            List<Employee> pagedEmployees = employees.subList(fromIndex, toIndex);
-            return ResponseEntity.ok(pagedEmployees);
+            List<Employee> filteredEmployees = employeeService.getEmployeesByPageAndSize(page, size);
+            return ResponseEntity.ok(filteredEmployees);
         }
         else{
-            return ResponseEntity.ok(employees);
+            return ResponseEntity.ok(employeeService.getEmployees());
         }
-
 
     }
 
     @PutMapping("/employees/{id}")
     public ResponseEntity<Employee> updateEmployee(@PathVariable long id, @RequestBody Employee updatedEmployee) {
-        for (Employee employee : employees) {
-            if (employee.getId() == id) {
-                employee.setAge(updatedEmployee.getAge());
-                employee.setSalary(updatedEmployee.getSalary());
-                return ResponseEntity.ok(employee);
-            }
+        Employee employee = employeeService.updateEmployee(id, updatedEmployee);
+        if (employee != null) {
+            return ResponseEntity.ok(employee);
         }
         return ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/employees/{id}")
     public ResponseEntity<Void> deleteEmployee(@PathVariable long id) {
-        employees.removeIf(employee -> employee.getId() == id);
-        return ResponseEntity.noContent().build();
+        boolean removed = employeeService.deleteEmployee(id);
+        if (removed) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 
 }
