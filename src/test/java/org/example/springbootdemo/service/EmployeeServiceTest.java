@@ -41,4 +41,36 @@ class EmployeeServiceTest {
         verify(employeeRepository, never()).addEmployee(any());
     }
 
+    @Test
+    void should_create_employee_given_employee_correct_condition() {
+        Employee employee = new Employee(1, "Kenny", 27, 5000, "Male");
+
+        Map<String, Object> idMap = employeeService.createEmployee(employee);
+        assertEquals(idMap.get("id"), 1);
+    }
+
+    @Test
+    void should_return_single_employee_given_exist_employee_id() {
+        Employee employee = new Employee(1, "Alice", 30, 5000, "Female");
+
+        when(employeeRepository.getEmployeeById(1)).thenReturn(employee);
+
+        Employee foundEmployee = employeeService.getEmployeeById(1);
+
+        assertEquals(foundEmployee.getId(), employee.getId());
+        assertEquals(foundEmployee.getName(), employee.getName());
+        assertEquals(foundEmployee.getAge(), employee.getAge());
+        assertEquals(foundEmployee.getSalary(), employee.getSalary());
+        assertEquals(foundEmployee.getGender(), employee.getGender());
+
+        verify(employeeRepository, times(1)).getEmployeeById(1);
+    }
+
+    @Test
+    void should_throw_exception_when_below_salary_range_and_above_age_range() {
+        assertThrows(EmployeeAgeSalaryException.class, () -> {
+            employeeService.createEmployee(new Employee(1, "Tom", 40, 15000, "Male"));
+        });
+    }
+
 }
