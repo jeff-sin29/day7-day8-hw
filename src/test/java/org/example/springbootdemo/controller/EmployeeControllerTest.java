@@ -263,5 +263,41 @@ class EmployeeControllerTest {
                 .andExpect(jsonPath("$[1].name").value("Kenny"));
     }
 
+    @Test
+    void should_Return_400_when_Create_Employee_Given_Age_Below_18() throws Exception {
+        String requestBody = """
+                {
+                    "name": "Mary",
+                    "age": 17,
+                    "salary": 5000,
+                    "gender": "Female"
+                }
+                """;
+        mockMvc.perform(post("/employees")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void should_Return_400_when_Create_Employee_Given_Age_Above_65() throws Exception {
+        String requestBody = """
+                {
+                    "name": "Ken",
+                    "age": 66,
+                    "salary": 7000,
+                    "gender": "Male"
+                }
+                """;
+        mockMvc.perform(post("/employees")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isBadRequest());
+    }
+
+
+
+
+
 
 }
