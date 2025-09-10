@@ -94,12 +94,14 @@ class EmployeeServiceTest {
 
         when(employeeRepository.deleteEmployeeById(1)).thenReturn(true);
         when(employeeRepository.getEmployeeById(1)).thenReturn(employee);
-        
+
         employee.setStatus(false);
         employeeService.deleteEmployee(1);
 
-        assertFalse(employee.isStatus());
+        assertFalse(employee.getStatus());
         verify(employeeRepository, times(1)).deleteEmployeeById(1);
     }
+
+
 
 }
