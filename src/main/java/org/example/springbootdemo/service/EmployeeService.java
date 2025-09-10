@@ -6,6 +6,7 @@ import org.example.springbootdemo.entity.Employee;
 import org.example.springbootdemo.exception.EmployeeAgeSalaryException;
 import org.example.springbootdemo.exception.EmployeeNotInAgeRangeException;
 import org.example.springbootdemo.exception.EmployeeNotFoundException;
+import org.example.springbootdemo.exception.InactiveEmployeeUpdateException;
 import org.example.springbootdemo.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -63,6 +64,9 @@ public class EmployeeService {
     public Employee updateEmployee(long id, Employee updatedEmployee) {
         if (employeeRepository.getEmployeeById(id) == null){
             throw new EmployeeNotFoundException("Employee with id " + id + " not found");
+        }
+        else if (!employeeRepository.getEmployeeById(id).getStatus()){
+            throw new InactiveEmployeeUpdateException();
         }
         return employeeRepository.updateEmployeeById(id, updatedEmployee);
     }

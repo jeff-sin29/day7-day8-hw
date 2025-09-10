@@ -22,4 +22,7 @@ public class Employee {
         this.status = true;
     }
 
+    public boolean getStatus() {
+        return status;
+    }
 }

@@ -19,4 +19,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(EmployeeAgeSalaryException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public void handleEmployeeAgeSalaryException(EmployeeAgeSalaryException ex) {}
+
+    @ExceptionHandler(InactiveEmployeeUpdateException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public void handleInactiveEmployeeUpdateException(InactiveEmployeeUpdateException ex) {}
 }

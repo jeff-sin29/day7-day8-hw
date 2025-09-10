@@ -3,6 +3,7 @@ package org.example.springbootdemo.service;
 import org.example.springbootdemo.entity.Employee;
 import org.example.springbootdemo.exception.EmployeeAgeSalaryException;
 import org.example.springbootdemo.exception.EmployeeNotInAgeRangeException;
+import org.example.springbootdemo.exception.InactiveEmployeeUpdateException;
 import org.example.springbootdemo.repository.EmployeeRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -84,7 +85,7 @@ class EmployeeServiceTest {
         employeeService.createEmployee(employee);
         verify(employeeRepository,times(1)).addEmployee(employeeArgumentCaptor.capture());
         Employee value = employeeArgumentCaptor.getValue();
-        assertTrue(value.isStatus());
+        assertTrue(value.getStatus());
     }
 
     @Test
@@ -102,6 +103,19 @@ class EmployeeServiceTest {
         verify(employeeRepository, times(1)).deleteEmployeeById(1);
     }
 
+    @Test
+    void should_fail_to_update_employee_given_inactive_employee() {
+        Employee employee = new Employee(1, "Jack", 25, 5000, "Male");
 
+        employee.setStatus(false);
+        when(employeeRepository.getEmployeeById(1)).thenReturn(employee);
+
+
+        Employee updatedEmployee = new Employee(1, "Jack", 26, 7000, "Male");
+
+        assertThrows(InactiveEmployeeUpdateException.class, () -> {
+            employeeService.updateEmployee(1, updatedEmployee);
+        });
+    }
 
 }
