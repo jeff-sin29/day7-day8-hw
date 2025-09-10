@@ -3,6 +3,8 @@ package org.example.springbootdemo.service;
 import lombok.Getter;
 import lombok.Setter;
 import org.example.springbootdemo.entity.Company;
+import org.example.springbootdemo.repository.CompanyRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -12,21 +14,22 @@ import java.util.*;
 @Setter
 @Service
 public class CompanyService {
-    private List<Company> companies = new ArrayList<>();
+
+    @Autowired
+    private CompanyRepository companyRepository;
 
     private int idCounter = 0;
 
     public Company getCompanyById(long id) {
-        return companies.stream()
-                .filter(company -> company.getId() == id)
-                .findFirst().orElse(null);
+        return companyRepository.getCompanyById(id);
     }
 
     public List<Company> getCompaniesList() {
-        return companies;
+        return companyRepository.getAllCompanies();
     }
 
     public List<Company> getCompaniesByPageAndSize(int page, int size) {
+        List<Company> companies = companyRepository.getAllCompanies();
         int fromIndex = Math.max((page - 1) * size, 0);
         int toIndex = Math.min(fromIndex + size, companies.size());
         if (fromIndex > toIndex) {
@@ -38,31 +41,23 @@ public class CompanyService {
     public Map<String, Integer> createCompany(Company company) {
         int newId = ++idCounter;
         company.setId(newId);
-        companies.add(company);
+        companyRepository.addCompany(company);
         Map<String, Integer> idMap = new HashMap<>();
         idMap.put("id", newId);
         return idMap;
     }
 
     public Company updateCompany(long id, Company updatedCompany) {
-        for (int i = 0; i < companies.size(); i++) {
-            if (companies.get(i).getId() == id) {
-                updatedCompany.setId(id);
-                companies.set(i, updatedCompany);
-                return updatedCompany;
-            }
-        }
-        return null;
+        return companyRepository.updateCompanyById(id, updatedCompany);
     }
 
     public Company deleteCompany(long id) {
-        for (int i = 0; i < companies.size(); i++) {
-            if (companies.get(i).getId() == id) {
-                return companies.remove(i);
-            }
-        }
-        return null;
+        return companyRepository.deleteCompanyById(id);
     }
 
+    public void clearCompaniesList() {
+        companyRepository.getCompanies().clear();
+        idCounter = 0;
+    }
 
 }

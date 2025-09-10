@@ -3,6 +3,9 @@ package org.example.springbootdemo.service;
 import lombok.Getter;
 import lombok.Setter;
 import org.example.springbootdemo.entity.Employee;
+import org.example.springbootdemo.exception.EmployeeAgeSalaryException;
+import org.example.springbootdemo.exception.EmployeeNotInAgeRangeException;
+import org.example.springbootdemo.exception.EmployeeNotFoundException;
 import org.example.springbootdemo.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +25,12 @@ public class EmployeeService {
     private int idCounter = 0;
 
     public Map<String, Object> createEmployee(Employee employee){
+        if (employee.getAge() < 18 || employee.getAge() > 65){
+            throw new EmployeeNotInAgeRangeException();
+        }
+        if (employee.getAge() > 30 && employee.getSalary() < 20000){
+            throw new EmployeeAgeSalaryException();
+        }
         int newId = ++idCounter;
         employee.setId(newId);
         employeeRepository.addEmployee(employee);
@@ -33,7 +42,11 @@ public class EmployeeService {
     }
 
     public Employee getEmployeeById(long id){
-        return employeeRepository.getEmployeeById(id);
+        Employee employee = employeeRepository.getEmployeeById(id);
+        if (employee == null){
+            throw new EmployeeNotFoundException("Employee with id " + id + " not found");
+        }
+        return employee;
     }
 
     public List<Employee> getEmployeesByGender(String gender){
@@ -48,11 +61,17 @@ public class EmployeeService {
     }
 
     public Employee updateEmployee(long id, Employee updatedEmployee) {
+        if (employeeRepository.getEmployeeById(id) == null){
+            throw new EmployeeNotFoundException("Employee with id " + id + " not found");
+        }
         return employeeRepository.updateEmployeeById(id, updatedEmployee);
     }
 
-    public boolean deleteEmployee(long id) {
-        return employeeRepository.deleteEmployeeById(id);
+    public void deleteEmployee(long id) {
+        boolean isRemoveSuccess = employeeRepository.deleteEmployeeById(id);
+        if (!isRemoveSuccess){
+            throw new EmployeeNotFoundException("Employee with id " + id + " not found");
+        }
     }
 
     public void clearEmployeesList(){

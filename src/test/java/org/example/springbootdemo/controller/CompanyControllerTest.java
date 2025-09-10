@@ -28,11 +28,9 @@ class CompanyControllerTest {
 
     @BeforeEach
     void setUp() {
-        List<Company> companies = new ArrayList<>();
-        companies.add(new Company(1, "Company1"));
-        companies.add(new Company(2, "Company2"));
-        companyService.setCompanies(companies);
-        companyService.setIdCounter(2);
+        companyService.clearCompaniesList();
+        companyService.createCompany(new Company(1, "Company1"));
+        companyService.createCompany(new Company(2, "Company2"));
     }
 
     @Test
@@ -64,10 +62,10 @@ class CompanyControllerTest {
     @Test
     void should_Return_Paged_Companies_when_Query_With_Page_And_Size() throws Exception {
         List<Company> companies = new ArrayList<>();
-        companies.add(new Company(1, "Company1"));
-        companies.add(new Company(2, "Company2"));
-        companies.add(new Company(3, "Company3"));
-        companyService.setCompanies(companies);
+        companyService.createCompany(new Company(1, "Company1"));
+        companyService.createCompany(new Company(2, "Company2"));
+        companyService.createCompany(new Company(3, "Company3"));
+
 
         mockMvc.perform(get("/companies")
                         .param("page", "1")

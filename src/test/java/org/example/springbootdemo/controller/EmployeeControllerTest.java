@@ -169,7 +169,7 @@ class EmployeeControllerTest {
         String employee2 = """
         {
             "name": "Peter",
-            "age": 32,
+            "age": 24,
             "salary": 7000,
             "gender": "Male"
         }
@@ -262,4 +262,6 @@ class EmployeeControllerTest {
                 .andExpect(jsonPath("$[0].name").value("Katy"))
                 .andExpect(jsonPath("$[1].name").value("Kenny"));
     }
+
+
 }

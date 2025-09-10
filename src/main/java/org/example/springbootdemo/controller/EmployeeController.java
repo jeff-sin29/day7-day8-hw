@@ -27,7 +27,12 @@ public class EmployeeController {
 
     @GetMapping("/employees/{id}")
     public ResponseEntity<Employee> getEmployee(@PathVariable long id){
-        return ResponseEntity.status(200).body(employeeService.getEmployeeById(id));
+        try {
+            Employee employee = employeeService.getEmployeeById(id);
+            return ResponseEntity.status(200).body(employee);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/employees")
@@ -52,20 +57,20 @@ public class EmployeeController {
 
     @PutMapping("/employees/{id}")
     public ResponseEntity<Employee> updateEmployee(@PathVariable long id, @RequestBody Employee updatedEmployee) {
+
         Employee employee = employeeService.updateEmployee(id, updatedEmployee);
-        if (employee != null) {
-            return ResponseEntity.ok(employee);
-        }
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(employee);
+
     }
 
     @DeleteMapping("/employees/{id}")
     public ResponseEntity<Void> deleteEmployee(@PathVariable long id) {
-        boolean removed = employeeService.deleteEmployee(id);
-        if (removed) {
+        try {
+            employeeService.deleteEmployee(id);
             return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.notFound().build();
     }
 
 }
