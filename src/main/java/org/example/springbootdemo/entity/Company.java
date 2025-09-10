@@ -1,4 +1,4 @@
-package org.example.springbootdemo;
+package org.example.springbootdemo.entity;
 
 public class Company {
     private long id;

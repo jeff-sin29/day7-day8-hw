@@ -1,6 +1,7 @@
 package org.example.springbootdemo.controller;
 
-import org.example.springbootdemo.Company;
+import org.example.springbootdemo.entity.Company;
+import org.example.springbootdemo.service.CompanyService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,15 +24,15 @@ class CompanyControllerTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private CompanyController companyController;
+    private CompanyService companyService;
 
     @BeforeEach
     void setUp() {
         List<Company> companies = new ArrayList<>();
         companies.add(new Company(1, "Company1"));
         companies.add(new Company(2, "Company2"));
-        companyController.setCompanies(companies);
-        companyController.setIdCounter(2);
+        companyService.setCompanies(companies);
+        companyService.setIdCounter(2);
     }
 
     @Test
@@ -66,7 +67,7 @@ class CompanyControllerTest {
         companies.add(new Company(1, "Company1"));
         companies.add(new Company(2, "Company2"));
         companies.add(new Company(3, "Company3"));
-        companyController.setCompanies(companies);
+        companyService.setCompanies(companies);
 
         mockMvc.perform(get("/companies")
                         .param("page", "1")
