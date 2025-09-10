@@ -6,6 +6,8 @@ import org.example.springbootdemo.exception.EmployeeNotInAgeRangeException;
 import org.example.springbootdemo.repository.EmployeeRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -21,6 +23,9 @@ import static org.mockito.Mockito.*;
 class EmployeeServiceTest {
     @InjectMocks
     EmployeeService employeeService;
+
+    @Captor
+    private ArgumentCaptor<Employee> employeeArgumentCaptor;
 
     @Mock
     EmployeeRepository employeeRepository;
@@ -73,4 +78,13 @@ class EmployeeServiceTest {
         });
     }
 
+    @Test
+    void should_return_employee_with_active_status_when_create_employee_given_correct_employee() {
+        Employee employee = new Employee(1, "Tom", 20, 2000, "Male");
+        employeeService.createEmployee(employee);
+        verify(employeeRepository,times(1)).addEmployee(employeeArgumentCaptor.capture());
+        Employee value = employeeArgumentCaptor.getValue();
+        assertTrue(value.isStatus());
+    }
+    
 }
