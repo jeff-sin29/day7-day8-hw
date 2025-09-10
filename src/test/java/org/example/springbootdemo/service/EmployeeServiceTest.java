@@ -86,5 +86,20 @@ class EmployeeServiceTest {
         Employee value = employeeArgumentCaptor.getValue();
         assertTrue(value.isStatus());
     }
-    
+
+    @Test
+    void should_set_status_false_when_delete_employee_given_existing_id() {
+        Employee employee = new Employee(1, "John", 25, 5000, "Male");
+        employee.setStatus(true);
+
+        when(employeeRepository.deleteEmployeeById(1)).thenReturn(true);
+        when(employeeRepository.getEmployeeById(1)).thenReturn(employee);
+        
+        employee.setStatus(false);
+        employeeService.deleteEmployee(1);
+
+        assertFalse(employee.isStatus());
+        verify(employeeRepository, times(1)).deleteEmployeeById(1);
+    }
+
 }

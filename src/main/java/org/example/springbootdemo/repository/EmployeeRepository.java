@@ -42,7 +42,14 @@ public class EmployeeRepository {
     }
 
     public boolean deleteEmployeeById(long id) {
-        return employees.removeIf(employee -> employee.getId() == id);
+        return employees.stream()
+                .filter(employee -> employee.getId() == id)
+                .findFirst()
+                .map(employee -> {
+                    employee.setStatus(false);
+                    return true;
+                })
+                .orElse(false);
     }
 
 }
