@@ -33,5 +33,12 @@ class EmployeeServiceTest {
         verify(employeeRepository, never()).addEmployee(any());
     }
 
-    
+    @Test
+    void should_throw_exception_when_create_employee_given_age_above_65(){
+        assertThrows(EmployeeNotInAgeRangeException.class, () -> {
+            employeeService.createEmployee(new Employee(1, "Ken", 66, 7000, "Male"));
+        });
+        verify(employeeRepository, never()).addEmployee(any());
+    }
+
 }
