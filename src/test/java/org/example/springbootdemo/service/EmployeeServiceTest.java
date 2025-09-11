@@ -50,10 +50,10 @@ class EmployeeServiceTest {
 
     @Test
     void should_create_employee_given_employee_correct_condition() {
-        Employee employee = new Employee(1, "Kenny", 27, 5000, "Male");
+        Employee employee = new Employee(1L, "Kenny", 27, 5000, "Male");
 
         Map<String, Object> idMap = employeeService.createEmployee(employee);
-        assertEquals(idMap.get("id"), 1);
+        assertEquals(idMap.get("id"), 1L);
     }
 
     @Test

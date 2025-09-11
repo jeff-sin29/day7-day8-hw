@@ -64,6 +64,12 @@ class CompanyControllerTest {
 
     @Test
     void should_Return_All_Companies_when_GetCompanies() throws Exception {
+        Company company = new Company();
+        company.setName("Company1");
+        companyRepository.addCompany(company);
+        Company company2 = new Company();
+        company2.setName("Company2");
+        companyRepository.addCompany(company2);
         mockMvc.perform(get("/companies")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -74,11 +80,14 @@ class CompanyControllerTest {
 
     @Test
     void should_Return_Company_when_GetCompanyById_given_CompanyId() throws Exception {
-        mockMvc.perform(get("/companies/{id}", 1)
+        Company company = new Company();
+        company.setName("oocl");
+        companyRepository.addCompany(company);
+        mockMvc.perform(get("/companies/{id}", company.getId())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.name").value("Company1"));
+                .andExpect(jsonPath("$.id").value(company.getId()))
+                .andExpect(jsonPath("$.name").value("oocl"));
     }
 
     @Test
@@ -90,11 +99,9 @@ class CompanyControllerTest {
 
     @Test
     void should_Return_Paged_Companies_when_Query_With_Page_And_Size() throws Exception {
-        List<Company> companies = new ArrayList<>();
-        companyService.createCompany(new Company(1, "Company1"));
-        companyService.createCompany(new Company(2, "Company2"));
-        companyService.createCompany(new Company(3, "Company3"));
-
+        companyService.createCompany(new Company( "Company1"));
+        companyService.createCompany(new Company( "Company2"));
+        companyService.createCompany(new Company( "Company3"));
 
         mockMvc.perform(get("/companies")
                         .param("page", "1")
@@ -116,22 +123,24 @@ class CompanyControllerTest {
         mockMvc.perform(post("/companies")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(3));
+                .andExpect(status().isCreated());
     }
 
     @Test
     void should_Update_Company_Name_given_Valid_Id() throws Exception {
+        Company company = new Company();
+        company.setName("oocl");
+        companyRepository.addCompany(company);
         String updateRequest = """
         {
             "name": "Companyyy"
         }
         """;
-        mockMvc.perform(put("/companies/1")
+        mockMvc.perform(put("/companies/{id}", company.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updateRequest))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.id").value(company.getId()))
                 .andExpect(jsonPath("$.name").value("Companyyy"));
     }
 
@@ -150,7 +159,10 @@ class CompanyControllerTest {
 
     @Test
     void should_Delete_Company_and_Return_204_when_Company_Exists() throws Exception {
-        mockMvc.perform(delete("/companies/1"))
+        Company company = new Company();
+        company.setName("oocl");
+        companyRepository.addCompany(company);
+        mockMvc.perform(delete("/companies/{id}", company.getId()))
                 .andExpect(status().isNoContent());
     }
 

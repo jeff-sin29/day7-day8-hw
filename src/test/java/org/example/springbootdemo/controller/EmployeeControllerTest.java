@@ -166,49 +166,37 @@ class EmployeeControllerTest {
 
     @Test
     void should_Delete_Employee_and_Return_204_when_Employee_Exists() throws Exception {
-        String requestBody = """
-        {
-            "name": "Ketty",
-            "age": 30,
-            "salary": 5000,
-            "gender": "Female"
-        }
-        """;
-        long id = createEmployee(requestBody);
+        Company company= new Company();
+        company.setName("oocl");
+        companyRepository.addCompany(company);
+        Employee employee = new Employee("Ketty", 30, 5000, "Female");
+        employee.setStatus(true);
+        employee.setCompanyId(company.getId());
+        employeeRepository.addEmployee(employee);
 
-        mockMvc.perform(delete("/employees/{id}", id))
+        mockMvc.perform(delete("/employees/{id}", employee.getId()))
                 .andExpect(status().isNoContent());
     }
 
     @Test
     void should_Return_Paged_Employees_when_Query_With_Page_And_Size() throws Exception {
-        String employee1 = """
-    {
-        "name": "Katy",
-        "age": 25,
-        "salary": 5000,
-        "gender": "Female"
-    }
-    """;
-        String employee2 = """
-    {
-        "name": "Kenny",
-        "age": 28,
-        "salary": 6000,
-        "gender": "Male"
-    }
-    """;
-        String employee3 = """
-    {
-        "name": "Jeff",
-        "age": 30,
-        "salary": 7000,
-        "gender": "Male"
-    }
-    """;
-        createEmployee(employee1);
-        createEmployee(employee2);
-        createEmployee(employee3);
+        Company company= new Company();
+        company.setName("oocl");
+        companyRepository.addCompany(company);
+        Employee employee = new Employee("Katy", 25, 5000, "Female");
+        employee.setStatus(true);
+        employee.setCompanyId(company.getId());
+        employeeRepository.addEmployee(employee);
+
+        Employee employee2 = new Employee("Kenny", 28, 6000, "Male");
+        employee2.setStatus(true);
+        employee2.setCompanyId(company.getId());
+        employeeRepository.addEmployee(employee2);
+
+        Employee employee3 = new Employee("Jeff", 30, 7000, "Male");
+        employee3.setStatus(true);
+        employee3.setCompanyId(company.getId());
+        employeeRepository.addEmployee(employee3);
 
         mockMvc.perform(get("/employees")
                         .param("page", "1")
@@ -222,6 +210,7 @@ class EmployeeControllerTest {
 
     @Test
     void should_Return_400_when_Create_Employee_Given_Age_Below_18() throws Exception {
+
         String requestBody = """
                 {
                     "name": "Mary",

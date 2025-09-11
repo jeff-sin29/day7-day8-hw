@@ -22,8 +22,12 @@ public class Company {
     @JoinColumn(name = "company_id")
     private List<Employee> employees = new ArrayList<>();
 
-    public Company(){
+    public Company() {
 
+    }
+
+    public Company(String name) {
+        this.name = name;
     }
 
     public Company(long id, String name){
