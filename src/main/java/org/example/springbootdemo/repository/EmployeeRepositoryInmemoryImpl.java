@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.List;
 
-@Repository
 public class EmployeeRepositoryInmemoryImpl implements EmployeeRepository {
     public List<Employee> employees = new ArrayList<>();
 

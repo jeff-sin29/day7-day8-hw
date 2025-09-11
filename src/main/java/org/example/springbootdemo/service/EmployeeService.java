@@ -11,13 +11,13 @@ import org.example.springbootdemo.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-@Getter
-@Setter
+
 @Service
 public class EmployeeService {
     @Autowired
@@ -25,17 +25,19 @@ public class EmployeeService {
 
     private int idCounter = 0;
 
+    @Transactional
     public Map<String, Object> createEmployee(Employee employee){
+        employee.setStatus(true);
         if (employee.getAge() < 18 || employee.getAge() > 65){
             throw new EmployeeNotInAgeRangeException();
         }
         if (employee.getAge() > 30 && employee.getSalary() < 20000){
             throw new EmployeeAgeSalaryException();
         }
-        int newId = ++idCounter;
-        employee.setId(newId);
+
         employeeRepository.addEmployee(employee);
-        return Map.of("id", newId);
+
+        return Map.of("id", employee.getId());
     }
 
     public List<Employee> getEmployees(){
@@ -79,7 +81,7 @@ public class EmployeeService {
             throw new EmployeeNotFoundException("Employee with id " + id + " not found");
         }
     }
-
+    @Transactional
     public void clearEmployeesList(){
         employeeRepository.clear();
         idCounter = 0;
