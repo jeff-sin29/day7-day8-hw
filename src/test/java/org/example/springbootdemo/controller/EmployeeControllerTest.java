@@ -1,6 +1,10 @@
 package org.example.springbootdemo.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.example.springbootdemo.entity.Company;
+import org.example.springbootdemo.entity.Employee;
+import org.example.springbootdemo.repository.CompanyRepository;
+import org.example.springbootdemo.repository.EmployeeRepository;
 import org.example.springbootdemo.service.EmployeeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,6 +29,12 @@ class EmployeeControllerTest {
 
     @Autowired
     private EmployeeService employeeService;
+
+    @Autowired
+    private EmployeeRepository employeeRepository;
+
+    @Autowired
+    private CompanyRepository companyRepository;
 
     @BeforeEach
     void setUp(){
@@ -60,20 +70,17 @@ class EmployeeControllerTest {
 
     @Test
     void should_Return_Employee_when_Get_Employee_given_employee_id() throws Exception {
-        String requestBody = """
-                {
-                    "name": "John Doe",
-                    "age": 30,
-                    "salary": 7000,
-                    "gender": "Male"
-                }
-                """;
+        Company company= new Company();
+        company.setName("oocl");
+        companyRepository.addCompany(company);
+        Employee employee = new Employee("John Doe", 30, 7000, "Male");
+        employee.setStatus(true);
+        employee.setCompanyId(company.getId());
+        employeeRepository.addEmployee(employee);
 
-        long id = createEmployee(requestBody);
-
-        mockMvc.perform(get("/employees/{id}", id))
+        mockMvc.perform(get("/employees/{id}", employee.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(id))
+                .andExpect(jsonPath("$.id").value(employee.getId()))
                 .andExpect(jsonPath("$.name").value("John Doe"))
                 .andExpect(jsonPath("$.age").value(30))
                 .andExpect(jsonPath("$.salary").value(7000))
@@ -82,38 +89,23 @@ class EmployeeControllerTest {
 
     @Test
     void should_Return_Employees_when_Query_Employee_Given_gender() throws Exception {
-        String requestBody = """
-                {
-                    "name": "John Doe",
-                    "age": 30,
-                    "salary": 7000,
-                    "gender": "Male"
-                }
-                """;
+        Company company= new Company();
+        company.setName("oocl");
+        companyRepository.addCompany(company);
+        Employee employee = new Employee("John Doe", 30, 7000, "Male");
+        employee.setStatus(true);
+        employee.setCompanyId(company.getId());
+        employeeRepository.addEmployee(employee);
 
-        long id = createEmployee(requestBody);
+        Employee employee2 = new Employee("Mary", 30, 7000, "Female");
+        employee2.setStatus(true);
+        employee2.setCompanyId(company.getId());
+        employeeRepository.addEmployee(employee2);
 
-        requestBody = """
-                {
-                    "name": "Mary",
-                    "age": 30,
-                    "salary": 7000,
-                    "gender": "Female"
-                }
-                """;
-
-        long id2 = createEmployee(requestBody);
-
-        requestBody = """
-                {
-                    "name": "Candy",
-                    "age": 30,
-                    "salary": 8000,
-                    "gender": "Female"
-                }
-                """;
-
-        long id3 = createEmployee(requestBody);
+        Employee employee3 = new Employee("Candy", 30, 8000, "Female");
+        employee3.setStatus(true);
+        employee3.setCompanyId(company.getId());
+        employeeRepository.addEmployee(employee3);
 
         mockMvc.perform(get("/employees")
                         .param("gender", "Female")
@@ -124,15 +116,13 @@ class EmployeeControllerTest {
 
     @Test
     void should_Update_Employee_Age_And_Salary_given_Put_Request() throws Exception {
-        String requestBody = """
-            {
-                "name": "HelloWorld",
-                "age": 30,
-                "salary": 5000,
-                "gender": "Male"
-            }
-            """;
-        long id = createEmployee(requestBody);
+        Company company= new Company();
+        company.setName("oocl");
+        companyRepository.addCompany(company);
+        Employee employee = new Employee("HelloWorld", 30, 500, "Male");
+        employee.setStatus(true);
+        employee.setCompanyId(company.getId());
+        employeeRepository.addEmployee(employee);
 
         String updateRequest = """
             {   
@@ -141,36 +131,30 @@ class EmployeeControllerTest {
                 "salary": 7000
             }
             """;
-        mockMvc.perform(put("/employees/{id}", id)
+        mockMvc.perform(put("/employees/{id}", employee.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updateRequest))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(id))
+                .andExpect(jsonPath("$.id").value(employee.getId()))
                 .andExpect(jsonPath("$.age").value(28))
                 .andExpect(jsonPath("$.salary").value(7000));
     }
 
     @Test
     void should_Return_All_Employees_when_GetAllEmployees_given_Employees_Exist() throws Exception {
-        String employee1 = """
-        {
-            "name": "Mary",
-            "age": 28,
-            "salary": 6000,
-            "gender": "Female"
-        }
-        """;
-        String employee2 = """
-        {
-            "name": "Peter",
-            "age": 24,
-            "salary": 7000,
-            "gender": "Male"
-        }
-        """;
-        long id = createEmployee(employee1);
 
-        long id2 = createEmployee(employee2);
+        Company company= new Company();
+        company.setName("oocl");
+        companyRepository.addCompany(company);
+        Employee employee = new Employee("Mary", 28, 6000, "Female");
+        employee.setStatus(true);
+        employee.setCompanyId(company.getId());
+        employeeRepository.addEmployee(employee);
+
+        Employee employee2 = new Employee("Peter", 24, 7000, "Male");
+        employee2.setStatus(true);
+        employee2.setCompanyId(company.getId());
+        employeeRepository.addEmployee(employee2);
 
         mockMvc.perform(get("/employees")
                         .contentType(MediaType.APPLICATION_JSON))

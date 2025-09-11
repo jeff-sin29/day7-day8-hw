@@ -1,6 +1,9 @@
 package org.example.springbootdemo.controller;
 
 import org.example.springbootdemo.entity.Company;
+import org.example.springbootdemo.entity.Employee;
+import org.example.springbootdemo.repository.CompanyRepository;
+import org.example.springbootdemo.repository.EmployeeRepository;
 import org.example.springbootdemo.service.CompanyService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,11 +29,37 @@ class CompanyControllerTest {
     @Autowired
     private CompanyService companyService;
 
+    @Autowired
+    private CompanyRepository companyRepository;
+
+    @Autowired
+    private EmployeeRepository employeeRespository;
+
     @BeforeEach
     void setUp() {
         companyService.clearCompaniesList();
-        companyService.createCompany(new Company(1, "Company1"));
-        companyService.createCompany(new Company(2, "Company2"));
+    }
+
+    @Test
+    void should_return_company_with_employees() throws Exception {
+        Company company = new Company();
+        company.setName("oocl");
+        companyRepository.addCompany(company);
+
+        Employee employee = new Employee();
+        employee.setSalary(800000);
+        employee.setGender("Male");
+        employee.setAge(18);
+        employee.setCompanyId(company.getId());
+        employeeRespository.addEmployee(employee);
+        company.getEmployees().add(employee);
+
+        mockMvc.perform(get("/companies/{id}", company.getId())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(company.getId()))
+                .andExpect(jsonPath("$.employees.length()").value(1));
+
     }
 
     @Test

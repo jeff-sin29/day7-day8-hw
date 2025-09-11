@@ -43,8 +43,8 @@ public class CompanyController {
     }
 
     @PostMapping("/companies")
-    public ResponseEntity<Map<String, Integer>> createCompany(@RequestBody Company company) {
-        Map<String, Integer> response = companyService.createCompany(company);
+    public ResponseEntity<Map<String, Long>> createCompany(@RequestBody Company company) {
+        Map<String, Long> response = companyService.createCompany(company);
         return ResponseEntity.status(201).body(response);
     }
 

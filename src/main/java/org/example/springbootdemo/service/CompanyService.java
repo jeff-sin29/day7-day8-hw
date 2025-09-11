@@ -18,8 +18,6 @@ public class CompanyService {
     @Autowired
     private CompanyRepository companyRepository;
 
-    private int idCounter = 0;
-
     public Company getCompanyById(long id) {
         return companyRepository.getCompanyById(id);
     }
@@ -38,12 +36,10 @@ public class CompanyService {
         return companies.subList(fromIndex, toIndex);
     }
 
-    public Map<String, Integer> createCompany(Company company) {
-        int newId = ++idCounter;
-        company.setId(newId);
+    public Map<String, Long> createCompany(Company company) {
         companyRepository.addCompany(company);
-        Map<String, Integer> idMap = new HashMap<>();
-        idMap.put("id", newId);
+        Map<String, Long> idMap = new HashMap<>();
+        idMap.put("id", company.getId());
         return idMap;
     }
 
@@ -56,8 +52,7 @@ public class CompanyService {
     }
 
     public void clearCompaniesList() {
-        companyRepository.getCompanies().clear();
-        idCounter = 0;
+        companyRepository.clear();
     }
 
 }

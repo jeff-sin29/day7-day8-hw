@@ -25,6 +25,14 @@ public class Employee {
     public Employee() {
     }
 
+    public Employee(String name, int age, double salary, String gender) {
+        this.name = name;
+        this.age = age;
+        this.salary = salary;
+        this.gender = gender;
+        this.status = true;
+    }
+
     public Employee(long id, String name, int age, double salary, String gender) {
         this.id = id;
         this.name = name;

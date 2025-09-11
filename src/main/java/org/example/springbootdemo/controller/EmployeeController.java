@@ -2,6 +2,7 @@ package org.example.springbootdemo.controller;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.example.springbootdemo.dto.UpdateEmployeeReq;
 import org.example.springbootdemo.entity.Employee;
 import org.example.springbootdemo.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,11 +56,9 @@ public class EmployeeController {
     }
 
     @PutMapping("/employees/{id}")
-    public ResponseEntity<Employee> updateEmployee(@PathVariable long id, @RequestBody Employee updatedEmployee) {
-
+    public ResponseEntity<Employee> updateEmployee(@PathVariable long id, @RequestBody UpdateEmployeeReq updatedEmployee) {
         Employee employee = employeeService.updateEmployee(id, updatedEmployee);
         return ResponseEntity.ok(employee);
-
     }
 
     @DeleteMapping("/employees/{id}")

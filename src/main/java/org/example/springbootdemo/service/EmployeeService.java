@@ -2,6 +2,7 @@ package org.example.springbootdemo.service;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.example.springbootdemo.dto.UpdateEmployeeReq;
 import org.example.springbootdemo.entity.Employee;
 import org.example.springbootdemo.exception.EmployeeAgeSalaryException;
 import org.example.springbootdemo.exception.EmployeeNotInAgeRangeException;
@@ -63,14 +64,29 @@ public class EmployeeService {
         return employees.subList(fromIndex, toIndex);
     }
 
-    public Employee updateEmployee(long id, Employee updatedEmployee) {
-        if (employeeRepository.getEmployeeById(id) == null){
-            throw new EmployeeNotFoundException("Employee with id " + id + " not found");
+//    public Employee updateEmployee(long id, Employee updatedEmployee) {
+//        if (employeeRepository.getEmployeeById(id) == null){
+//            throw new EmployeeNotFoundException("Employee with id " + id + " not found");
+//        }
+//        else if (!employeeRepository.getEmployeeById(id).getStatus()){
+//            throw new InactiveEmployeeUpdateException();
+//        }
+//        return employeeRepository.updateEmployeeById(id, updatedEmployee);
+//    }
+
+    public Employee updateEmployee(Long id, UpdateEmployeeReq updateEmployeeReq) {
+        Employee existedEmployee = employeeRepository.getEmployeeById(id);
+        if (existedEmployee == null) {
+            throw new EmployeeNotFoundException("Employee not found with id: " + id);
         }
-        else if (!employeeRepository.getEmployeeById(id).getStatus()){
+        if (!existedEmployee.getStatus()) {
             throw new InactiveEmployeeUpdateException();
         }
-        return employeeRepository.updateEmployeeById(id, updatedEmployee);
+        existedEmployee.setName(updateEmployeeReq.getName());
+        existedEmployee.setAge(updateEmployeeReq.getAge());
+        existedEmployee.setSalary(updateEmployeeReq.getSalary());
+        employeeRepository.updateEmployeeById(id, existedEmployee);
+        return existedEmployee;
     }
 
     public void deleteEmployee(long id) {
@@ -81,7 +97,7 @@ public class EmployeeService {
             throw new EmployeeNotFoundException("Employee with id " + id + " not found");
         }
     }
-    @Transactional
+
     public void clearEmployeesList(){
         employeeRepository.clear();
         idCounter = 0;

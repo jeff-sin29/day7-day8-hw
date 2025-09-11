@@ -1,5 +1,6 @@
 package org.example.springbootdemo.service;
 
+import org.example.springbootdemo.dto.UpdateEmployeeReq;
 import org.example.springbootdemo.entity.Employee;
 import org.example.springbootdemo.exception.EmployeeAgeSalaryException;
 import org.example.springbootdemo.exception.EmployeeNotInAgeRangeException;
@@ -42,7 +43,7 @@ class EmployeeServiceTest {
     @Test
     void should_throw_exception_when_create_employee_given_age_above_65(){
         assertThrows(EmployeeNotInAgeRangeException.class, () -> {
-            employeeService.createEmployee(new Employee(1, "Ken", 66, 7000, "Male"));
+            employeeService.createEmployee(new Employee("Ken", 66, 7000, "Male"));
         });
         verify(employeeRepository, never()).addEmployee(any());
     }
@@ -110,11 +111,10 @@ class EmployeeServiceTest {
         employee.setStatus(false);
         when(employeeRepository.getEmployeeById(1)).thenReturn(employee);
 
-
-        Employee updatedEmployee = new Employee(1, "Jack", 26, 7000, "Male");
+        UpdateEmployeeReq updatedEmployee = new UpdateEmployeeReq("Jack", 26, 7000);
 
         assertThrows(InactiveEmployeeUpdateException.class, () -> {
-            employeeService.updateEmployee(1, updatedEmployee);
+            employeeService.updateEmployee(1L, updatedEmployee);
         });
     }
 
