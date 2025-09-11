@@ -72,14 +72,16 @@ public class EmployeeService {
     }
 
     public void deleteEmployee(long id) {
-        boolean isRemoveSuccess = employeeRepository.deleteEmployeeById(id);
+        Employee employee = employeeRepository.getEmployeeById(id);
+        employee.setStatus(false);
+        boolean isRemoveSuccess = employeeRepository.deleteEmployee(employee);
         if (!isRemoveSuccess){
             throw new EmployeeNotFoundException("Employee with id " + id + " not found");
         }
     }
 
     public void clearEmployeesList(){
-        employeeRepository.getEmployees().clear();
+        employeeRepository.clear();
         idCounter = 0;
     }
 }

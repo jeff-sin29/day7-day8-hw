@@ -1,8 +1,19 @@
 package org.example.springbootdemo.entity;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "companies")
 public class Company {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
     private String name;
+
+    public Company(){
+
+    }
 
     public Company(long id, String name){
         this.id = id;
